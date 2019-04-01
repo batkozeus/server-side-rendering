@@ -3,6 +3,7 @@ import cors from "cors";
 import serialize from "serialize-javascript"
 import { renderToString } from "react-dom/server";
 import App from '../shared/App';
+import { fetchPopularRepos } from '../shared/api'
 
 const app = express();
 
@@ -14,25 +15,27 @@ app.use(cors());
 app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
-    const name = 'Tyler';
-    const markup = renderToString(
-        <App data={name} />
-    );
-  
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>SSR with RR</title>
-                <script src="/bundle.js" defer></script>
-                <script>window.__INITIAL_DATA__ = ${serialize(name)}</script>
-            </head>
-    
-            <body>
-                <div id="app">${markup}</div>
-            </body>
-        </html>
-    `)
+    fetchPopularRepos()
+    .then((data) => {
+        const markup = renderToString(
+            <App data={data} />
+        );
+
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>SSR with RR</title>
+                    <script src="/bundle.js" defer></script>
+                    <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
+                </head>
+        
+                <body>
+                    <div id="app">${markup}</div>
+                </body>
+            </html>
+        `)
+    })
 });
 
 app.listen(3000, () => {
