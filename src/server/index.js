@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import serialize from "serialize-javascript"
+import serialize from "serialize-javascript";
 import { renderToString } from "react-dom/server";
-import { matchPath } from "react-router-dom"
+import { StaticRouter, matchPath } from "react-router-dom";
 import App from '../shared/App';
-import routes from '../shared/routes'
+import routes from '../shared/routes';
 
 const app = express();
 
@@ -25,8 +25,11 @@ app.get("*", (req, res, next) => {
         : Promise.resolve()
 
     promise.then((data) => {
+        const context = { data }
         const markup = renderToString(
-            <App data={data} />
+            <StaticRouter location={req.url} context={{context}}>
+                <App />
+            </StaticRouter>
         );
 
         res.send(`
