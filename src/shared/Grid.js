@@ -16,9 +16,11 @@ class Grid extends Component {
             repos,
             loading: repos ? false : true,
         };
+
+        this.fetchRepos = this.fetchRepos.bind(this);
     }
 
-    componentDidMount = () => {
+    componentDidMount () {
         if (!this.state.repos) {
             this.fetchRepos(this.props.match.params.id);
         }
@@ -30,7 +32,7 @@ class Grid extends Component {
         }
     }
 
-    fetchRepos = (lang) => {
+    fetchRepos (lang) {
         this.setState(() => ({
             loading: true
         }))
